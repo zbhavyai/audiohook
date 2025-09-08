@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM docker.io/library/python:3.11-slim
 LABEL org.opencontainers.image.title="youtube-audio-downloader"
 LABEL org.opencontainers.image.description="YouTube Audio Downloader"
 LABEL org.opencontainers.image.source="https://github.com/zbhavyai/youtube-audio-downloader"
