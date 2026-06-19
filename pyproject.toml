@@ -1,5 +1,5 @@
 [project]
-name = "youtube-audio-downloader"
+name = "audiohook"
 dynamic = ["version"]
 description = "Utility to download YouTube audio, curate metadata tags, and batch-process tracks"
 readme = "README.md"

@@ -1,8 +1,8 @@
 FROM docker.io/library/python:3.14-slim
 ARG REVISION
-LABEL org.opencontainers.image.title="youtube-audio-downloader"
-LABEL org.opencontainers.image.description="YouTube Audio Downloader"
-LABEL org.opencontainers.image.source="https://github.com/zbhavyai/youtube-audio-downloader"
+LABEL org.opencontainers.image.title="AudioHook"
+LABEL org.opencontainers.image.description="AudioHook"
+LABEL org.opencontainers.image.source="https://github.com/zbhavyai/audiohook"
 LABEL org.opencontainers.image.licenses="MIT"
 LABEL org.opencontainers.image.authors="Bhavyai Gupta <https://zbhavyai.github.io>"
 LABEL org.opencontainers.image.version="${REVISION}"

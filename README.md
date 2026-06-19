@@ -1,4 +1,4 @@
-# YouTube Audio Downloader
+# AudioHook
 
 A python script to download, trim, and manage metadata for YouTube audio files. The script supports individual file operations and batch processing via CSV.
 
