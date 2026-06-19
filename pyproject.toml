@@ -9,7 +9,7 @@ license-files = ["LICENSE"]
 dependencies = ["mutagen", "prettytable", "python-dotenv", "yt-dlp"]
 
 [dependency-groups]
-dev = ["build", "ruff", "mypy"]
+dev = ["build", "ruff", "mypy", "shellcheck-py", "shfmt-py"]
 
 [build-system]
 requires = ["setuptools", "setuptools-scm"]
