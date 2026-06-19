@@ -36,3 +36,6 @@ dist/
 # patch
 *.orig
 *.rej
+
+# logs
+logs/

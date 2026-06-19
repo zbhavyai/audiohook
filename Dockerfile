@@ -1,14 +1,22 @@
-FROM docker.io/library/python:3.11-slim
+FROM docker.io/library/python:3.14-slim
+ARG REVISION
 LABEL org.opencontainers.image.title="youtube-audio-downloader"
 LABEL org.opencontainers.image.description="YouTube Audio Downloader"
 LABEL org.opencontainers.image.source="https://github.com/zbhavyai/youtube-audio-downloader"
 LABEL org.opencontainers.image.licenses="MIT"
 LABEL org.opencontainers.image.authors="Bhavyai Gupta <https://zbhavyai.github.io>"
-LABEL org.opencontainers.image.version="1.0.0"
-WORKDIR /app
-COPY requirements.txt .
-COPY src /app/src
-COPY samples /app/samples
-RUN pip install --no-cache-dir --requirement requirements.txt
+LABEL org.opencontainers.image.version="${REVISION}"
+WORKDIR /opt/app
+ENV SETUPTOOLS_SCM_PRETEND_VERSION=${REVISION} \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/opt/app \
+    PATH="/opt/app/.venv/bin:$PATH" \
+    UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy
+COPY --from=ghcr.io/astral-sh/uv:0.11 /uv /uvx /bin/
+COPY pyproject.toml uv.lock README.md LICENSE ./
+COPY src ./src
+RUN --mount=type=cache,target=/root/.cache/uv uv sync --frozen --no-group dev
 ENTRYPOINT ["python", "-m", "src"]
 CMD []
