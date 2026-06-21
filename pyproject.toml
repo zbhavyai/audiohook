@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = "==3.14.*"
 license = "MIT"
 license-files = ["LICENSE"]
-dependencies = ["mutagen", "prettytable", "python-dotenv", "yt-dlp"]
+dependencies = ["click", "mutagen", "prettytable", "python-dotenv", "yt-dlp"]
 
 [dependency-groups]
 dev = ["build", "ruff", "mypy", "shellcheck-py", "shfmt-py"]
