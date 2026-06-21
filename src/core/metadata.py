@@ -1,12 +1,11 @@
 import os
-from typing import Dict, List
 
 from mutagen import File
 from mutagen.id3 import COMM, ID3, TALB, TCOM, TCON, TDRC, TIT2, TPE1
 from mutagen.mp3 import MP3
 
-from .config import get_logger
-from .table import display_data
+from src.config import get_logger
+from src.utils.table import display_data
 
 logger = get_logger(__name__)
 
@@ -43,14 +42,22 @@ def clean_metadata(file_or_directory_path: str) -> bool:
 
     if os.path.isfile(file_or_directory_path):
         return _clean_metadata_file(file_or_directory_path)
-    elif os.path.isdir(file_or_directory_path):
+    if os.path.isdir(file_or_directory_path):
         return _clean_metadata_directory(file_or_directory_path)
-    else:
-        logger.error(f'"{file_or_directory_path}" is not a valid file or directory')
-        return False
+    logger.error(f'"{file_or_directory_path}" is not a valid file or directory')
+    return False
 
 
-def set_metadata(file_path: str, title: str, artist: str, album: str, composer: str, year: int, genre: str, comments: str) -> bool:
+def set_metadata(
+    file_path: str,
+    title: str,
+    artist: str,
+    album: str,
+    composer: str,
+    year: str,
+    genre: str,
+    comments: str,
+) -> bool:
     """
     Sets the metadata for an MP3 file.
     Args:
@@ -59,7 +66,7 @@ def set_metadata(file_path: str, title: str, artist: str, album: str, composer: 
         artist (str): The artist of the track.
         album (str): The album name.
         composer (str): The composer of the track.
-        year (int): The year of release.
+        year (str): The year of release.
         genre (str): The genre of the track.
         comments (str): Additional comments, such as a YouTube link.
     Returns:
@@ -73,35 +80,38 @@ def set_metadata(file_path: str, title: str, artist: str, album: str, composer: 
 
     try:
         audio = MP3(file_path, ID3=ID3)
-        audio.tags = ID3()
+        if audio.tags is None:
+            audio.add_tags()
+        tags = audio.tags
+        assert tags is not None
 
         if title:
             logger.debug(f'setting title: "{title}"')
-            audio.tags.add(TIT2(encoding=3, text=title))
+            tags.add(TIT2(encoding=3, text=title))
 
         if artist:
             logger.debug(f'setting artist: "{artist}"')
-            audio.tags.add(TPE1(encoding=3, text=artist))
+            tags.add(TPE1(encoding=3, text=artist))
 
         if album:
             logger.debug(f'setting album: "{album}"')
-            audio.tags.add(TALB(encoding=3, text=album))
+            tags.add(TALB(encoding=3, text=album))
 
         if composer:
             logger.debug(f'setting composer: "{composer}"')
-            audio.tags.add(TCOM(encoding=3, text=composer))
+            tags.add(TCOM(encoding=3, text=composer))
 
         if year:
             logger.debug(f'setting year: "{year}"')
-            audio.tags.add(TDRC(encoding=3, text=year))
+            tags.add(TDRC(encoding=3, text=year))
 
         if genre:
             logger.debug(f'setting genre: "{genre}"')
-            audio.tags.add(TCON(encoding=3, text=genre))
+            tags.add(TCON(encoding=3, text=genre))
 
         if comments:
             logger.debug(f'setting comments: "{comments}"')
-            audio.tags.add(COMM(encoding=3, lang="eng", desc="", text=comments))
+            tags.add(COMM(encoding=3, lang="eng", desc="", text=comments))
 
         audio.save()
         logger.info(f'metadata set for "{file_path}"')
@@ -130,9 +140,8 @@ def _clean_metadata_directory(directory_path: str) -> bool:
 
     for root, _, files in os.walk(directory_path):
         for file in files:
-            if file.endswith(".mp3"):
-                if not _clean_metadata_file(os.path.join(root, file)):
-                    allCleaned = False
+            if file.endswith(".mp3") and not _clean_metadata_file(os.path.join(root, file)):
+                allCleaned = False
 
     return allCleaned
 
@@ -167,7 +176,7 @@ def _clean_metadata_file(file_path: str) -> bool:
         return False
 
 
-def _get_metadata_file(file_path: str) -> List[Dict[str, str]]:
+def _get_metadata_file(file_path: str) -> list[dict[str, str]]:
     """
     Prints relevant metadata for an MP3 file.
     Args:
@@ -196,13 +205,14 @@ def _get_metadata_file(file_path: str) -> List[Dict[str, str]]:
         audio = MP3(file_path, ID3=ID3)
         tags = audio.tags
 
-        obj["title"] = tags.get("TIT2", "")
-        obj["artist"] = tags.get("TPE1", "")
-        obj["album"] = tags.get("TALB", "")
-        obj["composer"] = tags.get("TCOM", "")
-        obj["year"] = tags.get("TDRC", "")
-        obj["genre"] = tags.get("TCON", "")
-        obj["comments"] = " ".join(next((comm.text for comm in tags.getall("COMM") if comm.lang == "eng"), []))
+        if tags is not None:
+            obj["title"] = tags.get("TIT2", "")
+            obj["artist"] = tags.get("TPE1", "")
+            obj["album"] = tags.get("TALB", "")
+            obj["composer"] = tags.get("TCOM", "")
+            obj["year"] = tags.get("TDRC", "")
+            obj["genre"] = tags.get("TCON", "")
+            obj["comments"] = " ".join(next((comm.text for comm in tags.getall("COMM") if comm.lang == "eng"), []))
 
     except Exception as e:
         logger.error(f'metadata error for "{file_path}": {e}')
@@ -210,7 +220,7 @@ def _get_metadata_file(file_path: str) -> List[Dict[str, str]]:
     return [obj]
 
 
-def _get_metadata_directory(directory_path: str) -> List[Dict[str, str]]:
+def _get_metadata_directory(directory_path: str) -> list[dict[str, str]]:
     """
     Prints relevant metadata for all MP3 files in a directory.
     Args:
@@ -222,7 +232,7 @@ def _get_metadata_directory(directory_path: str) -> List[Dict[str, str]]:
 
     if not os.path.isdir(directory_path):
         logger.error(f'directory "{directory_path}" does not exist')
-        return False
+        return []
 
     obj = []
 
@@ -234,7 +244,7 @@ def _get_metadata_directory(directory_path: str) -> List[Dict[str, str]]:
     return obj
 
 
-def _get_headers() -> List[str]:
+def _get_headers() -> list[str]:
     """
     Returns the headers for the metadata table.
     Returns:

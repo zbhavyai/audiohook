@@ -1,10 +1,10 @@
 import argparse
 
-from .config import OUTPUT_DIR, VERSION, get_logger
-from .csv_handler import read_csv
-from .downloader import download_audio, download_audio_from_csv
-from .metadata import clean_metadata, print_metadata, set_metadata
-from .table import display_data
+from src.config import OUTPUT_DIR, VERSION, get_logger
+from src.core.downloader import download_audio, download_audio_from_csv
+from src.core.metadata import clean_metadata, print_metadata, set_metadata
+from src.utils.csv_handler import read_csv
+from src.utils.table import display_data
 
 logger = get_logger(__name__)
 
@@ -63,12 +63,12 @@ def get_parser() -> argparse.ArgumentParser:
     csv_parser.add_argument("--download", action="store_true", help="Download from CSV file")
 
     # version
-    version_parser = subparsers.add_parser("version", help="Print version")
+    subparsers.add_parser("version", help="Print version")
 
     return parser
 
 
-def main():
+def main() -> None:
     parser = get_parser()
     args = parser.parse_args()
 
@@ -78,7 +78,16 @@ def main():
         elif args.action == "clean":
             clean_metadata(args.file)
         elif args.action == "set":
-            set_metadata(args.file, args.title, args.artist, args.year, args.composer, args.comment, args.genre, args.album)
+            set_metadata(
+                args.file,
+                args.title,
+                args.artist,
+                args.year,
+                args.composer,
+                args.comment,
+                args.genre,
+                args.album,
+            )
 
     elif args.group == "download":
         download_audio(args.url, "00:00:00", "00:00:00", args.output, OUTPUT_DIR)

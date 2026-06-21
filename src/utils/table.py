@@ -1,13 +1,11 @@
-from typing import Dict, List
-
 from prettytable import PrettyTable
 
-from .config import get_logger
+from src.config import get_logger
 
 logger = get_logger(__name__)
 
 
-def display_data(headers: List, rows: List[Dict]) -> None:
+def display_data(headers: list, rows: list[dict]) -> None:
     """
     Prints the data in a table format using PrettyTable.
     Args:

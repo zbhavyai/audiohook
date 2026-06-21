@@ -1,13 +1,12 @@
 import csv
-from typing import Dict, List, Tuple
 
-from .config import get_logger
-from .utils import format_multiple_artists
+from src.config import get_logger
+from src.utils.utils import format_multiple_artists
 
 logger = get_logger(__name__)
 
 
-def read_csv(file_path: str) -> Tuple[List[str], List[Dict[str, str]]]:
+def read_csv(file_path: str) -> tuple[list[str], list[dict[str, str]]]:
     """
     Reads a CSV file and returns its header and rows.
     Args:
@@ -22,7 +21,7 @@ def read_csv(file_path: str) -> Tuple[List[str], List[Dict[str, str]]]:
     csvHeader = []
     csvRows = []
 
-    with open(file_path, "r", newline="") as file:
+    with open(file_path, newline="") as file:
         reader = csv.DictReader(file)
         csvHeader = ["ytLink", "title", "artist", "album", "composer", "year", "genre", "start_time", "end_time"]
 

@@ -1,14 +1,14 @@
 import logging
-import os
+from pathlib import Path
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-OUTPUT_DIR = os.path.join(BASE_DIR, "..", "output")
-LOG_DIR = os.path.join(BASE_DIR, "..", "logs")
-LOG_FILE = os.path.join(LOG_DIR, "script.log")
+BASE_DIR = Path(__file__).resolve().parent
+OUTPUT_DIR = BASE_DIR.parent / "output"
+LOG_DIR = BASE_DIR.parent / "logs"
+LOG_FILE = LOG_DIR / "script.log"
 VERSION = "1.0.0"
 
-os.makedirs(OUTPUT_DIR, exist_ok=True)
-os.makedirs(LOG_DIR, exist_ok=True)
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 logging.basicConfig(
     level=logging.INFO,

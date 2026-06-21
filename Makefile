@@ -8,6 +8,9 @@ init: ## install hook and dependencies
 	@ln -sf $(CURDIR)/.hooks/pre-commit.sh .git/hooks/pre-commit
 	@uv sync
 
+clean: ## clean build artifacts
+	@rm -rf build/ dist/ *.egg-info/ .venv/ .mypy_cache/ .ruff_cache/
+
 update: ## update dependencies
 	@uv lock --upgrade
 	@uv sync
@@ -22,4 +25,4 @@ lint: ## lint the codebase
 	@uv run mypy --pretty -- src
 
 print-version: ## print application verison
-	@uv run python -m src version
+	@uv run audiohook version
