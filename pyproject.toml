@@ -8,15 +8,15 @@ license = "MIT"
 license-files = ["LICENSE"]
 dependencies = ["mutagen", "prettytable", "python-dotenv", "yt-dlp"]
 
-[project.scripts]
-audiohook = "src.main:main"
-
 [dependency-groups]
 dev = ["build", "ruff", "mypy", "shellcheck-py", "shfmt-py"]
 
 [build-system]
 requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
+
+[project.scripts]
+audiohook = "src.main:main"
 
 [tool.setuptools_scm]
 version_scheme = "no-guess-dev"
