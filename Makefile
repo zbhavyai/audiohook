@@ -1,4 +1,4 @@
-.PHONY: init update format lint run
+.PHONY: init clean update format lint version
 
 help: ## show this help message
 	@echo "Available targets:"
@@ -24,5 +24,5 @@ lint: ## lint the codebase
 	@uv run ruff check --quiet --force-exclude -- src
 	@uv run mypy --pretty -- src
 
-print-version: ## print application verison
+version: ## print application verison
 	@uv run audiohook version
