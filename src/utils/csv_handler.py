@@ -1,4 +1,5 @@
 import csv
+from pathlib import Path
 
 from src.config import get_logger
 from src.utils.utils import format_multiple_artists
@@ -14,14 +15,15 @@ def read_csv(file_path: str) -> tuple[list[str], list[dict[str, str]]]:
     Returns:
         Tuple[List[str], List[Dict[str, str]]]: A tuple containing:
             - A list of strings representing the CSV header.
-            - A list of dictionaries, each representing a row in the CSV file with keys as column names and values as cell data.
+            - A list of dictionaries, each representing a row in the CSV file with
+              keys as column names and values as cell data.
     """
     logger.debug(f'reading file: "{file_path}"')
 
     csvHeader = []
     csvRows = []
 
-    with open(file_path, newline="") as file:
+    with Path(file_path).open(newline="") as file:
         reader = csv.DictReader(file)
         csvHeader = ["ytLink", "title", "artist", "album", "composer", "year", "genre", "start_time", "end_time"]
 

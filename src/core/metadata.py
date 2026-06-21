@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from mutagen import File
 from mutagen.id3 import COMM, ID3, TALB, TCOM, TCON, TDRC, TIT2, TPE1
@@ -20,10 +21,11 @@ def print_metadata(file_or_directory_path: str) -> None:
     """
     logger.info(f'getting metadata for "{file_or_directory_path}"')
 
-    if os.path.isfile(file_or_directory_path):
+    path = Path(file_or_directory_path)
+    if path.is_file():
         display_data(_get_headers(), _get_metadata_file(file_or_directory_path))
 
-    elif os.path.isdir(file_or_directory_path):
+    elif path.is_dir():
         display_data(_get_headers(), _get_metadata_directory(file_or_directory_path))
 
     else:
@@ -40,9 +42,10 @@ def clean_metadata(file_or_directory_path: str) -> bool:
     """
     logger.info(f'cleaning metadata for "{file_or_directory_path}"')
 
-    if os.path.isfile(file_or_directory_path):
+    path = Path(file_or_directory_path)
+    if path.is_file():
         return _clean_metadata_file(file_or_directory_path)
-    if os.path.isdir(file_or_directory_path):
+    if path.is_dir():
         return _clean_metadata_directory(file_or_directory_path)
     logger.error(f'"{file_or_directory_path}" is not a valid file or directory')
     return False
@@ -74,7 +77,7 @@ def set_metadata(
     """
     logger.debug(f'setting metadata for "{file_path}"')
 
-    if not os.path.isfile(file_path):
+    if not Path(file_path).is_file():
         logger.error(f'file "{file_path}" does not exist')
         return False
 
@@ -132,7 +135,7 @@ def _clean_metadata_directory(directory_path: str) -> bool:
     """
     logger.debug(f'cleaning metadata in "{directory_path}"')
 
-    if not os.path.isdir(directory_path):
+    if not Path(directory_path).is_dir():
         logger.error(f'directory "{directory_path}" does not exist')
         return False
 
@@ -140,7 +143,8 @@ def _clean_metadata_directory(directory_path: str) -> bool:
 
     for root, _, files in os.walk(directory_path):
         for file in files:
-            if file.endswith(".mp3") and not _clean_metadata_file(os.path.join(root, file)):
+            file_path = Path(root) / file
+            if file.endswith(".mp3") and not _clean_metadata_file(str(file_path)):
                 allCleaned = False
 
     return allCleaned
@@ -156,7 +160,7 @@ def _clean_metadata_file(file_path: str) -> bool:
     """
     logger.debug(f'cleaning metadata for "{file_path}"')
 
-    if not os.path.isfile(file_path):
+    if not Path(file_path).is_file():
         logger.error(f'file "{file_path}" does not exist')
         return False
 
@@ -187,7 +191,7 @@ def _get_metadata_file(file_path: str) -> list[dict[str, str]]:
     logger.debug(f'printing metadata for "{file_path}"')
 
     obj = {
-        "file": os.path.basename(file_path),
+        "file": Path(file_path).name,
         "title": "",
         "artist": "",
         "album": "",
@@ -197,7 +201,7 @@ def _get_metadata_file(file_path: str) -> list[dict[str, str]]:
         "comments": "",
     }
 
-    if not os.path.isfile(file_path):
+    if not Path(file_path).is_file():
         logger.error(f'file "{file_path}" does not exist')
         return [obj]
 
@@ -230,7 +234,7 @@ def _get_metadata_directory(directory_path: str) -> list[dict[str, str]]:
     """
     logger.debug(f'printing metadata in "{directory_path}"')
 
-    if not os.path.isdir(directory_path):
+    if not Path(directory_path).is_dir():
         logger.error(f'directory "{directory_path}" does not exist')
         return []
 
@@ -239,7 +243,8 @@ def _get_metadata_directory(directory_path: str) -> list[dict[str, str]]:
     for root, _, files in os.walk(directory_path):
         for file in files:
             if file.endswith(".mp3"):
-                obj.extend(_get_metadata_file(os.path.join(root, file)))
+                file_path = Path(root) / file
+                obj.extend(_get_metadata_file(str(file_path)))
 
     return obj
 

@@ -1,4 +1,3 @@
-import os
 import re
 from pathlib import Path
 
@@ -40,13 +39,13 @@ def download_audio(
 
     def progress_hook(d: dict) -> None:
         if d["status"] == "finished":
-            logger.debug(f'finished downloading "{os.path.basename(d["filename"])}"')
+            logger.debug(f'finished downloading "{Path(d["filename"]).name}"')
 
     def postprocessor_hook(d: dict) -> None:
         nonlocal final_filename
         if d["status"] == "finished" and d["postprocessor"] == "MoveFiles":
             final_filename = d["info_dict"]["filepath"]
-            logger.debug(f'finished processing "{os.path.basename(final_filename)}"')
+            logger.debug(f'finished processing "{Path(final_filename).name}"')
 
     ydl_opts = {
         "format": "bestaudio/best",
@@ -82,10 +81,10 @@ def download_audio(
             ydl.download([yt_link])
 
             if final_filename:
-                just_filename = os.path.basename(final_filename)
+                just_filename = Path(final_filename).name
                 logger.info(f'downloaded "{yt_link}" as "{just_filename}"')
 
-        if final_filename and os.path.exists(final_filename):
+        if final_filename and Path(final_filename).exists():
             return (True, final_filename)
         return (False, None)
 
